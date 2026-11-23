@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bugku bp｜ya-86-ui</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background-color: #0d1117;
+      color: #e6edf3;
+      font-family: "Microsoft YaHei", sans-serif;
+      line-height: 1.8;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #3fb950;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+    .info {
+      color: #8b949e;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    h2 {
+      color: #58a6ff;
+      font-size: 20px;
+      margin: 24px 0 10px;
+      border-left: 4px solid #3fb950;
+      padding-left: 10px;
+    }
+    pre {
+      background: #161b22;
+      padding: 12px;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 10px 0;
+    }
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+    .back {
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Bugku — bp</h1>
+    <div class="info">时间：2026-11-23｜分类：Web｜平台：Bugku</div>
+
+    <h2>题目描述</h2>
+    <p>题目提示：<code>弱密码 top1000？z?????</code>，目标是找出正确密码拿到 flag。</p >
+
+    <h2>考点</h2>
+    <ul>
+      <li>Burp Suite 抓包与 Intruder 字典爆破</li>
+      <li>前端源码 / JS 审计</li>
+      <li>爆破结果的特殊筛选：所有返回包长度几乎一致，不能直接靠长度判断</li>
+    </ul>
+
+    <h2>思路</h2>
+    <p>启动场景后，先抓包、查看页面源码。发现真正的校验不在登录表单，而是 <code>success.php?code=xxx</code>。提示告诉我们重点：<strong>z 开头的弱口令</strong>，从 top1000 弱密码字典里筛选 z 开头的口令进行爆破。</p >
+    <p>这题的坑：大部分响应包长度相同，常规“按长度区分”失效，需要仔细对比响应内容或者哈希，找到那个与众不同的包。</p >
+    <p>最终正确密码：<code>zxc123</code>，直接使用这个密码即可通过验证，拿到 flag。</p >
+
+    <h2>解题步骤</h2>
+    <ol>
+      <li>打开靶场，F12 查看源码，留意 JS 里泄露的 <code>success.php?code=</code> 逻辑；</li>
+      <li>准备弱密码字典，筛选以 z 开头的口令；</li>
+      <li>Burp 抓包，使用 Intruder 对 code 参数进行字典爆破；</li>
+      <li>对比返回包，找到特殊的那一条；</li>
+      <li>验证：密码 <code>zxc123</code>，成功获取 flag。</li>
+    </ol>
+
+    <h2>EXP</h2>
+<pre>
+# 关键点
+提示：z 开头弱口令
+密码：zxc123
+目标：success.php?code=xxx
+</pre>
+
+    <h2>小结</h2>
+    <p>这道题考察 Burp 爆破和细心读提示。不要死磕登录框，多看看页面源码；遇到“返回长度全部一样”的爆破题，就要想到：不能只看长度，要比对返回内容。提示是最好的线索，“z?????”直接锁定了密码的特征，大大缩小爆破范围。</p >
+
+    <div class="back">
+      <a href=" ">← 返回主页</a >
+    </div>
+  </div>
+</body>
+</html>
